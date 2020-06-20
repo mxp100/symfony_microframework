@@ -6,23 +6,37 @@ namespace Framework;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\ClassLoader;
 use Doctrine\DBAL\Configuration as DBALConfiguration;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\ORM\Configuration as ORMConfiguration;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\Setup;
 use Framework\Contracts\DatabaseContract;
 
 class Database implements DatabaseContract
 {
     /** @var array */
     protected $config;
+    /** @var Connection */
     protected $connection;
+    /** @var EntityManager */
+    protected $entityManager;
 
     public function __construct()
     {
         $this->loadConfig();
         $this->initDBAL();
         $this->initORM();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getEntityManager(): EntityManager
+    {
+        return $this->entityManager;
     }
 
     /**
@@ -48,13 +62,17 @@ class Database implements DatabaseContract
      */
     protected function initORM()
     {
-        $ormConfig = new ORMConfiguration;
         $cache = new ArrayCache();
-        $ormConfig->setQueryCacheImpl($cache);
-        $ormConfig->setProxyDir(base_path('app/Entity'));
-        $ormConfig->setProxyNamespace('EntityProxy');
-        $ormConfig->setAutoGenerateProxyClasses(true);
 
-//        AnnotationRegistry::
+        $config = Setup::createAnnotationMetadataConfiguration(
+            [base_path('app/Entity')],
+            env('APP_DEBUG'),
+            base_path('app/Entity'),
+            $cache,
+            false
+        );
+
+        $this->entityManager = EntityManager::create($this->config, $config);
     }
+
 }

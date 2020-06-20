@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Entities;
+namespace App\Entity;
 
 
 class Order
