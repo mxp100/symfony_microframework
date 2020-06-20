@@ -4,26 +4,57 @@
 namespace Framework;
 
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\Setup;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\DBAL\Configuration as DBALConfiguration;
+use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\ORM\Configuration as ORMConfiguration;
 use Framework\Contracts\DatabaseContract;
 
 class Database implements DatabaseContract
 {
+    /** @var array */
+    protected $config;
+    protected $connection;
 
-
-    protected function initDoctrine()
+    public function __construct()
     {
-        $isDevMode = true;
-        $proxyDir = null;
-        $cache = null;
-        $useSimpleAnnotationReader = false;
-        $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__ . "/../app/Entities"), $isDevMode,
-            $proxyDir, $cache, $useSimpleAnnotationReader);
+        $this->loadConfig();
+        $this->initDBAL();
+        $this->initORM();
+    }
 
-        $conn = require config_path('database.php');
+    /**
+     * Loading config file
+     */
+    protected function loadConfig()
+    {
+        $this->config = require config_path('database.php');
+    }
 
-// obtaining the entity manager
-        $entityManager = EntityManager::create($conn, $config);
+    /**
+     * Initialize DBAL
+     * @throws DBALException
+     */
+    protected function initDBAL()
+    {
+        $dbalConfig = new DBALConfiguration();
+        $this->connection = DriverManager::getConnection($this->config, $dbalConfig);
+    }
+
+    /**
+     * Initialize ORM
+     */
+    protected function initORM()
+    {
+        $ormConfig = new ORMConfiguration;
+        $cache = new ArrayCache();
+        $ormConfig->setQueryCacheImpl($cache);
+        $ormConfig->setProxyDir(base_path('app/Entity'));
+        $ormConfig->setProxyNamespace('EntityProxy');
+        $ormConfig->setAutoGenerateProxyClasses(true);
+
+//        AnnotationRegistry::
     }
 }

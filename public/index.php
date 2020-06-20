@@ -8,10 +8,10 @@ use Framework\HttpKernel;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$app = Application::getInstance();
-
+$app = Application::load();
 
 /** @var HttpKernel $kernel */
 $kernel = $app->instance(KernelContract::class, new HttpKernel($app));
+
 $response = $kernel->handle();
 $response->send();

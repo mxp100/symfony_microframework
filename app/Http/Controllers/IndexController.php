@@ -8,6 +8,8 @@ class IndexController
 {
     public function index()
     {
-        return ['ttt'];
+        return view('index', [
+            'app_name' => env('APP_NAME'),
+        ]);
     }
 }
