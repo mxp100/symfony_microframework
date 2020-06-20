@@ -1,0 +1,3 @@
+!cache/views/.gitkeep
+cache/*
+*.sqlite

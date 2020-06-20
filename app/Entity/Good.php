@@ -42,7 +42,7 @@ class Good
     }
 
     /**
-     * @return int
+     * @return float
      */
     public function getPrice(): float
     {
