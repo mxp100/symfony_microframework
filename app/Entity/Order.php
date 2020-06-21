@@ -20,7 +20,7 @@ class Order extends BaseEntity
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
@@ -33,7 +33,7 @@ class Order extends BaseEntity
      * @ORM\ManyToMany(targetEntity="Good")
      * @ORM\JoinTable(name="order_items",
      *     joinColumns={@ORM\JoinColumn(name="order_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="good_id", referencedColumnName="id", unique=true)}
+     *     inverseJoinColumns={@ORM\JoinColumn(name="good_id", referencedColumnName="id")}
      *     )
      */
     protected $goods;

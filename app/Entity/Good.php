@@ -14,7 +14,7 @@ class Good extends BaseEntity
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
     /**
