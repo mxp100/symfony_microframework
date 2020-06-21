@@ -13,6 +13,8 @@ class TwigExtension extends AbstractExtension
     {
         return [
             new TwigFunction('env', 'env'),
+            new TwigFunction('url', 'url'),
+            new TwigFunction('route', 'route'),
         ];
     }
 }

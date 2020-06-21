@@ -34,7 +34,10 @@ const config = {
             '.js',
             '.vue',
             '.scss'
-        ]
+        ],
+        alias: {
+            vue$: 'vue/dist/vue.esm.js'
+        }
     },
     plugins: [
         new VueLoaderPlugin(),
