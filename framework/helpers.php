@@ -60,11 +60,11 @@ if (!function_exists('url')) {
             . $requestContext->getHost();
 
         if ($requestContext->isSecure()) {
-            if ($port = $requestContext->getHttpsPort() !== 443) {
+            if (($port = $requestContext->getHttpsPort()) !== 443) {
                 $url .= ':' . $port;
             }
         } else {
-            if ($port = $requestContext->getHttpPort() !== 80) {
+            if (($port = $requestContext->getHttpPort()) !== 80) {
                 $url .= ':' . $port;
             }
         }

@@ -48,7 +48,8 @@ services:
         - ./docker/nginx/sites:/etc/nginx/sites-available
         - ./docker/nginx/ssl:/etc/nginx/ssl
       ports:
-        - "80:1080"
+        - "1080:1080"
+        - "1443:1443"
       depends_on:
         - php-fpm
       networks:
