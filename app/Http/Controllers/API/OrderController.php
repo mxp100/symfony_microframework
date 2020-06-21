@@ -4,10 +4,12 @@
 namespace App\Http\Controllers\API;
 
 
+use Framework\Request;
+
 class OrderController
 {
-    public function order()
+    public function create(Request $request)
     {
-
+        dd($request);
     }
 }

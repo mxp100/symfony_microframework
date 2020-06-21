@@ -36,6 +36,12 @@ class Routes
                 '_controller' => API\GoodController::class . '::index',
             ]))->setMethods('get')
         );
+        $group->add(
+            'orders.create',
+            (new Route('orders', [
+                '_controller' => API\OrderController::class . '::create',
+            ]))->setMethods('post')
+        );
 
         $group->addPrefix('api');
         $group->addNamePrefix('api.');

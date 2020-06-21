@@ -53,7 +53,6 @@ class Application extends Container
     protected function registerBindings(): void
     {
         $this->instance(ContainerContract::class, $this);
-        $this->instance(ExceptionHandlerContract::class, new ExceptionHandler());
         $this->instance(EnvironmentContract::class, new Environment());
         $this->instance(DatabaseContract::class, new Database());
         $this->instance(ViewContract::class, new View());
