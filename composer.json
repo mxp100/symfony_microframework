@@ -20,7 +20,9 @@
     "twig/twig": "^3.0",
     "fzaninotto/faker": "^1.9",
     "doctrine/data-fixtures": "^1.4",
-    "mbezhanov/faker-provider-collection": "^1.2"
+    "mbezhanov/faker-provider-collection": "^1.2",
+    "symfony/serializer": "^5.1",
+    "symfony/property-access": "^5.1"
   },
   "autoload": {
     "psr-4": {

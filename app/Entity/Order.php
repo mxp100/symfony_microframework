@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Table(name="orders")
  */
-class Order
+class Order extends BaseEntity
 {
 
     const STATUS_NEW = 0;

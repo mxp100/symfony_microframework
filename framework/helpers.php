@@ -1,11 +1,16 @@
 <?php
 
+use Doctrine\ORM\EntityManager;
 use Framework\Application;
+use Framework\Contracts\DatabaseContract;
 use Framework\Contracts\EnvironmentContract;
 use Framework\Contracts\RouterContract;
 use Framework\Contracts\ViewContract;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
+/**
+ * Path helpers
+ */
 if (!function_exists('base_path')) {
     function base_path($path = '')
     {
@@ -41,6 +46,9 @@ if (!function_exists('resource_path')) {
     }
 }
 
+/**
+ * URL helpers
+ */
 if (!function_exists('url')) {
     function url($relative = '')
     {
@@ -78,6 +86,9 @@ if (!function_exists('route')) {
     }
 }
 
+/**
+ * View helpers
+ */
 if (!function_exists('view')) {
     function view(string $template, array $vars = [])
     {
@@ -87,6 +98,22 @@ if (!function_exists('view')) {
     }
 }
 
+/**
+ * ORM helpers
+ */
+if (!function_exists('em')) {
+    function em(): EntityManager
+    {
+        /** @var DatabaseContract $database */
+        $database = Application::getInstance()->make(DatabaseContract::class);
+
+        return $database->getEntityManager();
+    }
+}
+
+/**
+ * Environment helpers
+ */
 if (!function_exists('env')) {
     function env($key, $default = null)
     {

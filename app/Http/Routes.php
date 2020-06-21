@@ -19,17 +19,23 @@ class Routes
 
     protected function initFrontend(RouteCollection $routes)
     {
-        $routes->add('index', new Route('/', [
-            '_controller' => Controllers\IndexController::class . '::index',
-        ]));
+        $routes->add(
+            'index',
+            (new Route('/', [
+                '_controller' => Controllers\IndexController::class . '::index',
+            ]))->setMethods('get')
+        );
     }
 
     protected function initAPI(RouteCollection $routes)
     {
         $group = new RouteCollection();
-        $group->add('goods.generate', new Route('goods/generate', [
-            API\GoodController::class . '::generate',
-        ]));
+        $group->add(
+            'goods.index',
+            (new Route('goods', [
+                '_controller' => API\GoodController::class . '::index',
+            ]))->setMethods('get')
+        );
 
         $group->addPrefix('api');
         $group->addNamePrefix('api.');

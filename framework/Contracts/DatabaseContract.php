@@ -5,6 +5,7 @@ namespace Framework\Contracts;
 
 
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\Serializer\Serializer;
 
 interface DatabaseContract
 {
@@ -13,4 +14,10 @@ interface DatabaseContract
      * @return EntityManager
      */
     public function getEntityManager(): EntityManager;
+
+    /**
+     * Return entity serializer;
+     * @return Serializer
+     */
+    public function getSerializer(): Serializer;
 }

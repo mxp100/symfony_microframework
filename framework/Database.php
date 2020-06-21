@@ -12,6 +12,9 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Setup;
 use Framework\Contracts\DatabaseContract;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class Database implements DatabaseContract
 {
@@ -21,12 +24,15 @@ class Database implements DatabaseContract
     protected $connection;
     /** @var EntityManager */
     protected $entityManager;
+    /** @var Serializer */
+    protected $serializer;
 
     public function __construct()
     {
         $this->loadConfig();
         $this->initDBAL();
         $this->initORM();
+        $this->initSerializer();
     }
 
     /**
@@ -35,6 +41,14 @@ class Database implements DatabaseContract
     public function getEntityManager(): EntityManager
     {
         return $this->entityManager;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSerializer(): Serializer
+    {
+        return $this->serializer;
     }
 
     /**
@@ -71,6 +85,17 @@ class Database implements DatabaseContract
         );
 
         $this->entityManager = EntityManager::create($this->config, $config);
+    }
+
+    /**
+     * Initialize entity serializer
+     */
+    protected function initSerializer()
+    {
+        $encoder = new JsonEncoder();
+        $normalizer = new ObjectNormalizer();
+
+        $this->serializer = new Serializer([$normalizer], [$encoder]);
     }
 
 }
