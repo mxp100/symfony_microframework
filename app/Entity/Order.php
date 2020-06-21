@@ -5,6 +5,7 @@ namespace App\Entity;
 
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -68,9 +69,9 @@ class Order extends BaseEntity
     }
 
     /**
-     * @return ArrayCollection
+     * @return Collection
      */
-    public function getGoods(): ArrayCollection
+    public function getGoods(): Collection
     {
         return $this->goods;
     }

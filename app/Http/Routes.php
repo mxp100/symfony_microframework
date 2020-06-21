@@ -42,6 +42,12 @@ class Routes
                 '_controller' => API\OrderController::class . '::create',
             ]))->setMethods('post')
         );
+        $group->add(
+            'orders.pay',
+            (new Route('orders/{orderId}/pay', [
+                '_controller' => API\OrderController::class . '::pay',
+            ]))->setMethods('post')
+        );
 
         $group->addPrefix('api');
         $group->addNamePrefix('api.');

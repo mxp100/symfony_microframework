@@ -2,6 +2,7 @@
 
 namespace Framework;
 
+use Exception;
 use Framework\Contracts\ExceptionHandlerContract;
 use Framework\Contracts\KernelContract;
 use Framework\Contracts\MiddlewareContract;
@@ -10,8 +11,6 @@ use Framework\Contracts\RouterContract;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;
-use Symfony\Component\Routing\Exception\MethodNotAllowedException;
-use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class HttpKernel implements KernelContract
 {
@@ -111,10 +110,10 @@ class HttpKernel implements KernelContract
             $arguments = $this->argumentResolver->getArguments($request, $controller);
 
             return call_user_func_array($controller, $arguments);
-        } catch (ResourceNotFoundException $exception) {
-            return new Response('Not found resource', Response::HTTP_NOT_FOUND);
-        } catch (MethodNotAllowedException $exception){
-            return new Response('Method not allowed', Response::HTTP_METHOD_NOT_ALLOWED);
+        } catch (Exception $exception) {
+            /** @var ExceptionHandlerContract $exceptionHandler */
+            $exceptionHandler = $this->application->make(ExceptionHandlerContract::class);
+            return $exceptionHandler->handle($exception);
         }
     }
 
