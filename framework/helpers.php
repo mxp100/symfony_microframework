@@ -13,6 +13,13 @@ if (!function_exists('base_path')) {
     }
 }
 
+if (!function_exists('app_path')) {
+    function app_path($path = '')
+    {
+        return Application::getInstance()->applicationPath . $path;
+    }
+}
+
 if (!function_exists('config_path')) {
     function config_path($path = '')
     {

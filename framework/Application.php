@@ -4,7 +4,6 @@
 namespace Framework;
 
 
-use Dotenv;
 use Framework\Contracts\ContainerContract;
 use Framework\Contracts\DatabaseContract;
 use Framework\Contracts\EnvironmentContract;
@@ -28,6 +27,7 @@ class Application extends Container
     public $configPath;
     public $storagePath;
     public $resourcePath;
+    public $applicationPath;
 
     protected function __construct()
     {
@@ -47,6 +47,7 @@ class Application extends Container
         $this->configPath = $this->basePath . 'config/';
         $this->storagePath = $this->basePath . 'storage/';
         $this->resourcePath = $this->basePath . 'resources/';
+        $this->applicationPath = $this->basePath . 'app/';
     }
 
     protected function registerBindings(): void

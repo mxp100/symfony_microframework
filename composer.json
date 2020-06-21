@@ -1,5 +1,5 @@
 {
-  "name": "yuriy/symfony_test",
+  "name": "mxp100/symfony_test",
   "type": "project",
   "license": "GPL",
   "authors": [
@@ -10,13 +10,17 @@
   ],
   "require": {
     "php": "^7.2",
+    "ext-json": "*",
     "symfony/http-kernel": "^5.1",
     "symfony/routing": "^5.1",
     "doctrine/orm": "^2.7",
+    "doctrine/common": "^2.11",
     "guzzlehttp/guzzle": "^6.5",
-    "ext-json": "*",
     "vlucas/phpdotenv": "^5.0",
-    "twig/twig": "^3.0"
+    "twig/twig": "^3.0",
+    "fzaninotto/faker": "^1.9",
+    "doctrine/data-fixtures": "^1.4",
+    "mbezhanov/faker-provider-collection": "^1.2"
   },
   "autoload": {
     "psr-4": {

@@ -4,9 +4,7 @@
 namespace Framework;
 
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\ClassLoader;
 use Doctrine\DBAL\Configuration as DBALConfiguration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
@@ -65,9 +63,9 @@ class Database implements DatabaseContract
         $cache = new ArrayCache();
 
         $config = Setup::createAnnotationMetadataConfiguration(
-            [base_path('app/Entity')],
+            [app_path('Entity')],
             env('APP_DEBUG'),
-            base_path('app/Entity'),
+            app_path('Entity'),
             $cache,
             false
         );

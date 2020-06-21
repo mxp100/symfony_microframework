@@ -1,5 +1,6 @@
 <?php
 
+use App\Commands;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use Framework\Application;
 use Framework\Contracts\DatabaseContract;
@@ -13,4 +14,6 @@ $database = $app->make(DatabaseContract::class);
 
 $helperSet = ConsoleRunner::createHelperSet($database->getEntityManager());
 
-ConsoleRunner::run($helperSet);
+ConsoleRunner::run($helperSet, [
+    new Commands\DoctrineFixturesLoadCommand(),
+]);
