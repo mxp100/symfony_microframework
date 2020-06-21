@@ -7,7 +7,7 @@ namespace Framework;
 use Framework\Contracts\ContainerContract;
 use Framework\Contracts\DatabaseContract;
 use Framework\Contracts\EnvironmentContract;
-use Framework\Contracts\ExceptionHandlerContract;
+use Framework\Contracts\LoggerContract;
 use Framework\Contracts\ViewContract;
 use Framework\Traits\Singleton;
 use Symfony\Component\HttpFoundation\Request;
@@ -53,6 +53,7 @@ class Application extends Container
     protected function registerBindings(): void
     {
         $this->instance(ContainerContract::class, $this);
+        $this->instance(LoggerContract::class, new Logger());
         $this->instance(EnvironmentContract::class, new Environment());
         $this->instance(DatabaseContract::class, new Database());
         $this->instance(ViewContract::class, new View());

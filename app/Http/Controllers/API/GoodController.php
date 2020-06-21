@@ -4,14 +4,14 @@
 namespace App\Http\Controllers\API;
 
 
-use App\Entity\Good;
-use Symfony\Component\HttpFoundation\Response;
+use App\Services\GoodService;
 
-class GoodController
+class GoodController extends BaseController
 {
-    public function index(){
-        $goods = em()->getRepository(Good::class)->findAll();
+    public function index()
+    {
+        $service = new GoodService;
 
-        return $goods;
+        return $service->getAll();
     }
 }

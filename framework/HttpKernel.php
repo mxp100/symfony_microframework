@@ -4,11 +4,13 @@ namespace Framework;
 
 use Framework\Contracts\ExceptionHandlerContract;
 use Framework\Contracts\KernelContract;
+use Framework\Contracts\MiddlewareContract;
 use Framework\Contracts\RequestContract;
 use Framework\Contracts\RouterContract;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;
+use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class HttpKernel implements KernelContract
@@ -25,6 +27,10 @@ class HttpKernel implements KernelContract
      * @var ArgumentResolver
      */
     protected $argumentResolver;
+    /**
+     * @var MiddlewareContract[]
+     */
+    protected $middleware = [];
 
     public function __construct(Application $application)
     {
@@ -36,13 +42,24 @@ class HttpKernel implements KernelContract
         $this->argumentResolver = new ArgumentResolver();
     }
 
+    /**
+     * Add middleware
+     * @param MiddlewareContract $middleware
+     * @return HttpKernel
+     */
+    public function pushMiddleware(MiddlewareContract $middleware): self
+    {
+        $this->middleware[] = $middleware;
+        return $this;
+    }
+
     public function handle(RequestContract $request = null): Response
     {
         if (is_null($request)) {
             $request = $this->application->make(RequestContract::class);
         }
 
-        $this->registerMiddleware($request);
+        $this->handleMiddleware($request);
 
         $response = $this->handleRequest($request);
 
@@ -61,14 +78,13 @@ class HttpKernel implements KernelContract
     }
 
     /**
+     * Handle registered middleware
      * @param RequestContract $request
-     * @todo Must be implementing via classes
      */
-    protected function registerMiddleware(RequestContract $request)
+    protected function handleMiddleware(RequestContract $request)
     {
-        if ($request->isJson()) {
-            $data = json_decode($request->getContent(), true);
-            $request->request->replace(is_array($data) ? $data : array());
+        foreach ($this->middleware as $middleware) {
+            $middleware->handle($request);
         }
     }
 
@@ -97,6 +113,8 @@ class HttpKernel implements KernelContract
             return call_user_func_array($controller, $arguments);
         } catch (ResourceNotFoundException $exception) {
             return new Response('Not found resource', Response::HTTP_NOT_FOUND);
+        } catch (MethodNotAllowedException $exception){
+            return new Response('Method not allowed', Response::HTTP_METHOD_NOT_ALLOWED);
         }
     }
 

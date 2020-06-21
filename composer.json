@@ -1,6 +1,6 @@
 {
   "name": "mxp100/symfony_test",
-  "type": "project",
+  "type": "framework",
   "license": "GPL",
   "authors": [
     {
@@ -23,7 +23,8 @@
     "mbezhanov/faker-provider-collection": "^1.2",
     "symfony/serializer": "^5.1",
     "symfony/property-access": "^5.1",
-    "filp/whoops": "^2.7"
+    "filp/whoops": "^2.7",
+    "monolog/monolog": "^2.1"
   },
   "autoload": {
     "psr-4": {
