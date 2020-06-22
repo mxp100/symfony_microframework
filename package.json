@@ -13,16 +13,17 @@
     "build-prod": "webpack -p --mode production"
   },
   "dependencies": {
-    "autoprefixer": "^9.8.1",
+    "autoprefixer": "^9.8.2",
     "axios": "^0.19.2",
     "bootstrap": "^4.5.0",
-    "bootstrap-vue": "^2.15.0",
     "less-loader": "^6.1.1",
     "lodash": "^4.17.15",
     "moment": "^2.27.0",
     "postcss-loader": "^3.0.0",
     "style-loader": "^1.2.1",
-    "vue": "^2.6.11"
+    "v-click-outside": "^3.0.1",
+    "vue": "^2.6.11",
+    "vuex": "^3.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.10.3",

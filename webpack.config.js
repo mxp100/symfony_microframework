@@ -24,6 +24,16 @@ const config = {
                     'vue-style-loader',
                     MiniCssExtractPlugin.loader,
                     'css-loader',
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            plugins: function () {
+                                return [
+                                    require('autoprefixer')
+                                ];
+                            }
+                        }
+                    },
                     'sass-loader',
                 ]
             }

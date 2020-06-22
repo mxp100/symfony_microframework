@@ -1,3 +1,8 @@
+# DB & SEEDING
+```bash
+php cli.php orm:schema-tool:update -f 
+php cli.php doctrine:fixtures:load
+```
 # RUN IN DOCKER
 Add to /etc/hosts:
 ```
