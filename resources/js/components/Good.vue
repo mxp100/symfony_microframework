@@ -1,12 +1,12 @@
 <template>
-    <div class="col mb-4">
+    <div class="col mb-4 card-deck">
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">{{ good.name }}</h5>
             </div>
             <div class="card-footer">
-                <button v-if="inBox" @click.prevent="removeFromCart" class="btn btn-primary float-right">
-                    REMOVE FROM CART
+                <button v-if="inBox" @click.prevent="removeFromCart" class="btn btn-warning float-right">
+                    REMOVE
                 </button>
                 <button v-else @click.prevent="addToCart" class="btn btn-primary float-right">
                     {{ good.price }} $
@@ -16,8 +16,6 @@
     </div>
 </template>
 <script>
-    import {mapActions} from "vuex";
-
     export default {
         name: 'Good',
         props: {

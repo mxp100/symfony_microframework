@@ -10,19 +10,34 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <ul class="list-group">
-                            <li v-for="good in CART"
-                                class="list-group-item d-flex justify-content-between align-items-center">
-                                {{ good.name }}
-                                <button class="btn btn-danger d-inline" @click="removeFromCart(good)">&times;</button>
-                            </li>
-                        </ul>
+                        <table class="table table-hover table-striped" v-if="CART.length">
+                            <thead>
+                            <tr>
+                                <th class="col">Item</th>
+                                <th class="col">Price</th>
+                                <th class="col"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="good in CART">
+                                <td scope="row">{{ good.name }}</td>
+                                <td>{{ good.price }}$</td>
+                                <td><button class="btn btn-danger d-inline" @click="removeFromCart(good)">&times;</button></td>
+                            </tr>
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-right">Total: {{ CART_TOTAL }}$</td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                        <h3 v-else>Empty cart</h3>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @click="hideModal">
                             Close
                         </button>
-                        <button type="button" class="btn btn-primary" @click="sendOrder">
+                        <button type="button" class="btn btn-primary" @click="sendOrder" v-if="CART.length">
                             Send order
                         </button>
                     </div>
@@ -43,7 +58,8 @@
         },
         computed: {
             ...mapGetters([
-                'CART'
+                'CART',
+                'CART_TOTAL',
             ])
         },
         data() {

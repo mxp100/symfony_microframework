@@ -5,6 +5,9 @@ const getters = {
     CART: state => {
         return state.cart;
     },
+    CART_TOTAL: state => {
+        return _.sumBy(state.cart, 'price')
+    },
     CART_IDS: state => {
         return _.map(state.cart, 'id');
     },

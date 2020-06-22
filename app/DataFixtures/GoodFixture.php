@@ -12,7 +12,7 @@ class GoodFixture extends BaseFixture
 
     function loadData(ObjectManager $manager)
     {
-        $this->createMany(Good::class, 20, function (Good $good, $count) {
+        $this->createMany(Good::class, 200, function (Good $good, $count) {
             $good->setName($this->faker->productName);
             $good->setPrice(rand(1, 100));
         });

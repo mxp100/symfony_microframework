@@ -5,11 +5,28 @@ namespace App\Services;
 
 
 use App\Entity\Good;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class GoodService
 {
-    public function getAll()
+    public function get($offset = 0, $limit = 100)
     {
-        return em()->getRepository(Good::class)->findAll();
+        $builder = em()->getRepository(Good::class)
+            ->createQueryBuilder('Goods')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
+
+        $query = $builder->getQuery();
+
+        $paginator = new Paginator($query);
+
+        $total = $paginator->count();
+        $goods = $paginator->getIterator()->getArrayCopy();
+
+        return [
+            'total' => $total,
+            'goods' => $goods,
+        ];
+
     }
 }
