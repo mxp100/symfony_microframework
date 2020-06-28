@@ -7,6 +7,7 @@ namespace Framework;
 use Exception;
 use Framework\Contracts\ExceptionHandlerContract;
 use Framework\Contracts\RequestContract;
+use Framework\Services\Logger;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;

@@ -1,23 +1,27 @@
 <?php
 
 
-namespace Framework;
+namespace Framework\Services;
 
 
 use Exception;
+use Framework\Application;
 use Framework\Contracts\LoggerContract;
 use Monolog\Logger as MonologLogger;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
-class Logger implements LoggerContract
+class Logger
 {
     /** @var MonologLogger[] */
     protected static $channels;
 
     protected static $config;
 
-    public function __construct()
+    public function __construct($config)
     {
-        self::$config = require(config_path('logger.php'));
+
+        self::$config = require($config);
+        dd(self::$config);
 
         foreach (self::$config['channels'] as $channel => $handlers) {
             self::$channels[$channel] = new MonologLogger($channel);

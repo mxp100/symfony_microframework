@@ -55,7 +55,7 @@ class HttpKernel implements KernelContract
     public function handle(RequestContract $request = null): Response
     {
         if (is_null($request)) {
-            $request = $this->application->make(RequestContract::class);
+            $request = $this->application->getContainer()->get(RequestContract::class);
         }
 
         $this->handleMiddleware($request);
@@ -89,9 +89,9 @@ class HttpKernel implements KernelContract
 
     protected function registerBindings()
     {
-        $this->application->instance(RouterContract::class, new Router());
-        $this->application->instance(RequestContract::class, Request::createFromGlobals());
-        $this->application->instance(ExceptionHandlerContract::class, new ExceptionHandler());
+        $this->application->getContainer();
+        $this->application->getContainer()->set(RequestContract::class, Request::createFromGlobals());
+        $this->application->getContainer()->set(ExceptionHandlerContract::class, new ExceptionHandler());
     }
 
     protected function handleRequest(Request $request)

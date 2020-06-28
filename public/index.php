@@ -9,10 +9,11 @@ use Framework\HttpKernel;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$app = Application::load();
+$app = new Application;
 
-/** @var HttpKernel $kernel */
-$kernel = $app->instance(KernelContract::class, new HttpKernel($app));
+$kernel = new HttpKernel($app);
+$app->getContainer()->set('http.kernel', $kernel);
+
 $kernel->pushMiddleware(new RequestJsonMiddleware());
 
 $response = $kernel->handle();

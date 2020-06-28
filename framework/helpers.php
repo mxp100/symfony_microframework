@@ -6,6 +6,7 @@ use Framework\Contracts\DatabaseContract;
 use Framework\Contracts\EnvironmentContract;
 use Framework\Contracts\RouterContract;
 use Framework\Contracts\ViewContract;
+use Framework\Environment;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -14,35 +15,35 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 if (!function_exists('base_path')) {
     function base_path($path = '')
     {
-        return Application::getInstance()->basePath . $path;
+        return Application::getInstance()->getContainer()->getParameter('path.base') . $path;
     }
 }
 
 if (!function_exists('app_path')) {
     function app_path($path = '')
     {
-        return Application::getInstance()->applicationPath . $path;
+        return Application::getInstance()->getContainer()->getParameter('path.base') . $path;
     }
 }
 
 if (!function_exists('config_path')) {
     function config_path($path = '')
     {
-        return Application::getInstance()->configPath . $path;
+        return Application::getInstance()->getContainer()->getParameter('path.base') . $path;
     }
 }
 
 if (!function_exists('storage_path')) {
     function storage_path($path = '')
     {
-        return Application::getInstance()->storagePath . $path;
+        return Application::getInstance()->getContainer()->getParameter('path.base') . $path;
     }
 }
 
 if (!function_exists('resource_path')) {
     function resource_path($path = '')
     {
-        return Application::getInstance()->resourcePath . $path;
+        return Application::getInstance()->getContainer()->getParameter('path.base') . $path;
     }
 }
 
@@ -53,7 +54,7 @@ if (!function_exists('url')) {
     function url($relative = '')
     {
         /** @var RouterContract $router */
-        $router = Application::getInstance()->make(RouterContract::class);
+        $router = Application::getInstance()->getContainer()->get('router');
         $requestContext = $router->getRequestContext();
 
         $url = $requestContext->getScheme() . '://'
@@ -117,8 +118,7 @@ if (!function_exists('em')) {
 if (!function_exists('env')) {
     function env($key, $default = null)
     {
-        /** @var EnvironmentContract $env */
-        $env = Application::getInstance()->make(EnvironmentContract::class);
+        $env = Environment::getInstance();
         return $env->get($key, $default);
     }
 }

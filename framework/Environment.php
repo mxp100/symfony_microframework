@@ -7,13 +7,16 @@ namespace Framework;
 use Dotenv\Dotenv;
 use Dotenv\Repository\RepositoryBuilder;
 use Framework\Contracts\EnvironmentContract;
+use Framework\Traits\Singleton;
 
-class Environment implements EnvironmentContract
+class Environment
 {
+
+    use Singleton;
 
     protected $repository;
 
-    public function __construct()
+    protected function __construct()
     {
         $this->repository = RepositoryBuilder::createWithDefaultAdapters()
             ->immutable()
