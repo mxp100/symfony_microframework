@@ -19,6 +19,7 @@ return function (ContainerConfigurator $configurator) {
 
     $services->set('router', Router::class)->public();
     $services->set('exception', ExceptionHandler::class)->public();
+    $services->set('request')->synthetic()->public();
 
     $services->set('db', Services\Database::class)->public();
     $services->set('view', Services\View::class)->public();

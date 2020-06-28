@@ -54,7 +54,7 @@ if (!function_exists('url')) {
     function url($relative = '')
     {
         /** @var RouterContract $router */
-        $router = Application::getInstance()->getContainer()->get('router');
+        $router = Application::getInstance()->getContainer()->get('request'); dd($router);
         $requestContext = $router->getRequestContext();
 
         $url = $requestContext->getScheme() . '://'

@@ -35,6 +35,8 @@ class HttpKernel implements KernelContract
     {
         $this->application = $application;
 
+        $this->application->getContainer()->set('request', Request::createFromGlobals());
+
         $this->controllerResolver = new ControllerResolver();
         $this->argumentResolver = new ArgumentResolver();
     }
@@ -52,7 +54,8 @@ class HttpKernel implements KernelContract
 
     public function handle(): Response
     {
-        $request = Request::createFromGlobals();
+        $request = $this->application->getContainer()->get('request');
+
 //        if (is_null($request)) {
 //            $request = $this->application->getContainer()->get(RequestContract::class);
 //        }
