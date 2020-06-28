@@ -4,6 +4,7 @@
 namespace Framework;
 
 
+use Framework\Cached\ServiceContainer;
 use Framework\Contracts\ContainerContract;
 use Framework\Contracts\DatabaseContract;
 use Framework\Contracts\EnvironmentContract;
@@ -35,7 +36,7 @@ class Application
     public $resourcePath;
     public $applicationPath;
 
-    /** @var ContainerInterface */
+    /** @var ServiceContainer */
     protected $container;
 
     public function __construct()
@@ -46,9 +47,9 @@ class Application
 
     /**
      * Return container
-     * @return ContainerInterface
+     * @return ServiceContainer
      */
-    public function getContainer(): ContainerInterface
+    public function getContainer(): ServiceContainer
     {
         return $this->container;
     }
@@ -66,7 +67,7 @@ class Application
     {
         $cachedContainerFile = $this->storagePath . 'cache/app/container.php';
         $containerConfigCache = new ConfigCache($cachedContainerFile, true);
-        if (!$containerConfigCache->isFresh()) {
+        if (!$containerConfigCache->isFresh() || 1) {
             $containerBuilder = new ContainerBuilder();
             $containerBuilder->setParameter('path.base', $this->basePath);
             $containerBuilder->setParameter('path.config', $this->configPath);
@@ -79,12 +80,15 @@ class Application
 
             $dumper = new PhpDumper($containerBuilder);
             $containerConfigCache->write(
-                $dumper->dump(['class' => 'CachedContainer']),
+                $dumper->dump([
+                    'class' => 'ServiceContainer',
+                    'namespace' => __NAMESPACE__ . '\Cached'
+                ]),
                 $containerBuilder->getResources()
             );
         }
         require_once $cachedContainerFile;
-        $this->container = new \CachedContainer();
+        $this->container = new Cached\ServiceContainer();
     }
 
 }

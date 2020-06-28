@@ -34,6 +34,7 @@ class ExceptionHandler implements ExceptionHandlerContract
      */
     public function __construct()
     {
+        return;
         $this->whoops = new Run();
         $plainTextHandler = new PlainTextHandler(Logger::default());
         if (env('APP_DEBUG', false)) {

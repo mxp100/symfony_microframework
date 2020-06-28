@@ -19,7 +19,7 @@ class Logger
 
     public function __construct($config)
     {
-
+dump($config);
         self::$config = require($config);
         dd(self::$config);
 

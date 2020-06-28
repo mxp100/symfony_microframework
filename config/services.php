@@ -1,5 +1,6 @@
 <?php
 
+use Framework\ExceptionHandler;
 use Framework\Router;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Framework\Services;
@@ -17,9 +18,7 @@ return function (ContainerConfigurator $configurator) {
     ]);
 
     $services->set('router', Router::class)->public();
-    $services->set('request', Router::class)->public();
-    $this->application->getContainer()->set(RequestContract::class, Request::createFromGlobals());
-//    $this->application->getContainer()->set(ExceptionHandlerContract::class, new ExceptionHandler());
+    $services->set('exception', ExceptionHandler::class)->public();
 
     $services->set('db', Services\Database::class)->public();
     $services->set('view', Services\View::class)->public();

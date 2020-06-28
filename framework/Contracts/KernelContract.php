@@ -6,5 +6,5 @@ use Symfony\Component\HttpFoundation\Response;
 
 interface KernelContract
 {
-    public function handle(RequestContract $request = null):Response;
+    public function handle():Response;
 }

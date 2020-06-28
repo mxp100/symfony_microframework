@@ -35,8 +35,6 @@ class HttpKernel implements KernelContract
     {
         $this->application = $application;
 
-        $this->registerBindings();
-
         $this->controllerResolver = new ControllerResolver();
         $this->argumentResolver = new ArgumentResolver();
     }
@@ -52,11 +50,12 @@ class HttpKernel implements KernelContract
         return $this;
     }
 
-    public function handle(RequestContract $request = null): Response
+    public function handle(): Response
     {
-        if (is_null($request)) {
-            $request = $this->application->getContainer()->get(RequestContract::class);
-        }
+        $request = Request::createFromGlobals();
+//        if (is_null($request)) {
+//            $request = $this->application->getContainer()->get(RequestContract::class);
+//        }
 
         $this->handleMiddleware($request);
 
@@ -87,17 +86,10 @@ class HttpKernel implements KernelContract
         }
     }
 
-    protected function registerBindings()
-    {
-        $this->application->getContainer();
-        $this->application->getContainer()->set(RequestContract::class, Request::createFromGlobals());
-        $this->application->getContainer()->set(ExceptionHandlerContract::class, new ExceptionHandler());
-    }
-
     protected function handleRequest(Request $request)
     {
         /** @var RouterContract $router */
-        $router = $this->application->make(RouterContract::class);
+        $router = $this->application->getContainer()->get('router');
 
         $matcher = $router->getUrlMatcher();
 
@@ -112,7 +104,7 @@ class HttpKernel implements KernelContract
             return call_user_func_array($controller, $arguments);
         } catch (Exception $exception) {
             /** @var ExceptionHandlerContract $exceptionHandler */
-            $exceptionHandler = $this->application->make(ExceptionHandlerContract::class);
+            $exceptionHandler = $this->application->getContainer()->get('exception');
             return $exceptionHandler->handle($exception);
         }
     }

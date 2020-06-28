@@ -22,28 +22,28 @@ if (!function_exists('base_path')) {
 if (!function_exists('app_path')) {
     function app_path($path = '')
     {
-        return Application::getInstance()->getContainer()->getParameter('path.base') . $path;
+        return Application::getInstance()->getContainer()->getParameter('path.app') . $path;
     }
 }
 
 if (!function_exists('config_path')) {
     function config_path($path = '')
     {
-        return Application::getInstance()->getContainer()->getParameter('path.base') . $path;
+        return Application::getInstance()->getContainer()->getParameter('path.config') . $path;
     }
 }
 
 if (!function_exists('storage_path')) {
     function storage_path($path = '')
     {
-        return Application::getInstance()->getContainer()->getParameter('path.base') . $path;
+        return Application::getInstance()->getContainer()->getParameter('path.storage') . $path;
     }
 }
 
 if (!function_exists('resource_path')) {
     function resource_path($path = '')
     {
-        return Application::getInstance()->getContainer()->getParameter('path.base') . $path;
+        return Application::getInstance()->getContainer()->getParameter('path.resource') . $path;
     }
 }
 
@@ -94,7 +94,7 @@ if (!function_exists('view')) {
     function view(string $template, array $vars = [])
     {
         /** @var ViewContract $view */
-        $view = Application::getInstance()->make(ViewContract::class);
+        $view = Application::getInstance()->getContainer()->get('view');
         return $view->view($template, $vars);
     }
 }
@@ -106,7 +106,7 @@ if (!function_exists('em')) {
     function em(): EntityManager
     {
         /** @var DatabaseContract $database */
-        $database = Application::getInstance()->make(DatabaseContract::class);
+        $database = Application::getInstance()->getContainer()->get('db');
 
         return $database->getEntityManager();
     }
