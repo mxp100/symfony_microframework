@@ -19,6 +19,6 @@ class DatabaseServiceProvider extends ServiceProvider
      */
     function register(): void
     {
-        // TODO: Implement register() method.
+        //
     }
 }
