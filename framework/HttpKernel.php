@@ -8,8 +8,14 @@ use Framework\Contracts\KernelContract;
 use Framework\Contracts\MiddlewareContract;
 use Framework\Contracts\RequestContract;
 use Framework\Contracts\RouterContract;
+use Framework\HttpKernel\ArgumentResolver\ContainerValueResolver;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
+use Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver;
+use Symfony\Component\HttpKernel\Controller\ArgumentResolver\RequestAttributeValueResolver;
+use Symfony\Component\HttpKernel\Controller\ArgumentResolver\RequestValueResolver;
+use Symfony\Component\HttpKernel\Controller\ArgumentResolver\SessionValueResolver;
+use Symfony\Component\HttpKernel\Controller\ArgumentResolver\VariadicValueResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 
 class HttpKernel implements KernelContract
@@ -38,7 +44,14 @@ class HttpKernel implements KernelContract
         $this->registerBindings();
 
         $this->controllerResolver = new ControllerResolver();
-        $this->argumentResolver = new ArgumentResolver();
+        $this->argumentResolver = new ArgumentResolver(null, [
+            new RequestAttributeValueResolver(),
+            new RequestValueResolver(),
+            new SessionValueResolver(),
+            new DefaultValueResolver(),
+            new VariadicValueResolver(),
+            new ContainerValueResolver(),
+        ]);
     }
 
     /**

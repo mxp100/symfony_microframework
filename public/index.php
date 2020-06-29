@@ -9,7 +9,10 @@ use Framework\HttpKernel;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$app = Application::load();
+$app = new Application(dirname(__DIR__));
+$app->
+
+
 
 /** @var HttpKernel $kernel */
 $kernel = $app->instance(KernelContract::class, new HttpKernel($app));
