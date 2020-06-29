@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Framework;
+namespace Framework\Services;
 
 
 use Framework\Contracts\ViewContract;
@@ -10,6 +10,7 @@ use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
+use Twig\Extension\AbstractExtension;
 use Twig\Loader\FilesystemLoader;
 
 class View implements ViewContract
@@ -19,8 +20,10 @@ class View implements ViewContract
 
     public function __construct()
     {
-        $this->init();
-        $this->loadExtensions();
+        $loader = new FilesystemLoader(resource_path('views'));
+        $this->twig = new Environment($loader, [
+            'cache' => env('APP_ENV') == 'production' ? storage_path('cache/views') : false,
+        ]);
     }
 
     /**
@@ -34,16 +37,8 @@ class View implements ViewContract
         return $this->twig->render($template . '.twig', $vars);
     }
 
-    protected function init()
+    public function loadExtension(AbstractExtension $extension)
     {
-        $loader = new FilesystemLoader(resource_path('views'));
-        $this->twig = new Environment($loader, [
-            'cache' => env('APP_ENV') == 'production' ? storage_path('cache/views') : false,
-        ]);
-    }
-
-    protected function loadExtensions()
-    {
-        $this->twig->addExtension(new TwigExtension());
+        $this->twig->addExtension($extension);
     }
 }

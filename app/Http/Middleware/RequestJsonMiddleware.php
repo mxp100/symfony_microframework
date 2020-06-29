@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 
 
 use Framework\Contracts\MiddlewareContract;
-use Framework\Contracts\RequestContract;
+use Framework\Request;
 
 class RequestJsonMiddleware implements MiddlewareContract
 {
@@ -13,7 +13,7 @@ class RequestJsonMiddleware implements MiddlewareContract
     /**
      * @inheritDoc
      */
-    public function handle(RequestContract $request): void
+    public function handle(Request $request): void
     {
         if ($request->isJson()) {
             $data = json_decode($request->getContent(), true);

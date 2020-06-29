@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Framework;
+namespace Framework\Services;
 
 
 use Dotenv\Dotenv;

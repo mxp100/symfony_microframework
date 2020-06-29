@@ -4,14 +4,14 @@
 namespace Framework\ServiceProviders;
 
 
-use Framework\Contracts\RouterContract;
-use Framework\Services\Router;
+use Framework\Contracts\DatabaseContract;
+use Framework\Services\Database;
 
-class RoutingServiceProvider extends ServiceProvider
+class DatabaseServiceProvider extends ServiceProvider
 {
 
     public $bindings = [
-        RouterContract::class => Router::class
+        DatabaseContract::class => Database::class,
     ];
 
     /**

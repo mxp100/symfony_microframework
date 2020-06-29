@@ -11,49 +11,60 @@ use RuntimeException;
 class Container implements ContainerContract
 {
 
-    protected $instances;
+    protected $instances = [];
 
+    /** @var static */
     protected static $instance;
 
     /**
-     * Get class instance
-     *
-     * @param $abstract
-     * @param Closure|mixed $instance
-     * @param bool $override
-     * @return mixed
+     * @inheritDoc
      */
-    public function instance($abstract, $instance, $override = false)
+    public function instance(string $abstract, $instance, $force = false): object
     {
-        if (!$override && $this->has($abstract)) {
-            throw new RuntimeException('class already instantiate');
-        }
-
-        if ($instance instanceof Closure){
-            $instance = $instance->call($this);
+        if (!$force && $this->has($abstract)) {
+            throw new RuntimeException('class "' . $abstract . '" already instantiate');
         }
 
         $this->instances[$abstract] = $instance;
-
-        return $this->instances[$abstract];
+        return $this->make($abstract);
     }
 
     /**
-     * Get instance via contract
-     *
-     * @param $abstract
-     * @return mixed
+     * @inheritDoc
      */
-    public function make($abstract)
+    public function bind(string $abstract, $concrete, $force = false): void
+    {
+        if (!$force && $this->has($abstract)) {
+            throw new RuntimeException('class "' . $abstract . '" already instantiate');
+        }
+
+        $this->instances[$abstract] = $concrete;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function make(string $abstract, array $parameters = [])
     {
         if (!$this->has($abstract)) {
             throw new RuntimeException($abstract . ' not found in container');
         }
 
+        $instance = $this->instances[$abstract];
+        if ($instance instanceof Closure) {
+            $this->instances[$abstract] = $instance($this, ...$parameters);
+        }
+        if (is_string($instance) && class_exists($instance)) {
+            $this->instances[$abstract] = new $instance(...$parameters);
+        }
+
         return $this->instances[$abstract];
     }
 
-    public function has($abstract)
+    /**
+     * @inheritDoc
+     */
+    public function has(string $abstract): bool
     {
         return isset($this->instances[$abstract]);
     }

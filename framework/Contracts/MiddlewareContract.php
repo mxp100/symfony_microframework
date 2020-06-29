@@ -4,11 +4,13 @@
 namespace Framework\Contracts;
 
 
+use Framework\Request;
+
 interface MiddlewareContract
 {
     /**
      * Middleware handler
-     * @param RequestContract $request
+     * @param Request $request
      */
-    public function handle(RequestContract $request): void;
+    public function handle(Request $request): void;
 }

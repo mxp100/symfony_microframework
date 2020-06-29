@@ -1,10 +1,11 @@
 <?php
 
 
-namespace Framework;
+namespace Framework\Services;
 
 
 use Exception;
+use Framework\Application;
 use Framework\Contracts\ExceptionHandlerContract;
 use Framework\Contracts\RequestContract;
 use Symfony\Component\HttpFoundation\Response;

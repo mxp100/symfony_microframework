@@ -4,14 +4,14 @@
 namespace Framework\ServiceProviders;
 
 
-use Framework\Contracts\RouterContract;
-use Framework\Services\Router;
+use Framework\Contracts\EnvironmentContract;
+use Framework\Services\Environment;
 
-class RoutingServiceProvider extends ServiceProvider
+class EnvServiceProvider extends ServiceProvider
 {
 
     public $bindings = [
-        RouterContract::class => Router::class
+        EnvironmentContract::class => Environment::class
     ];
 
     /**

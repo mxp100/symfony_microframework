@@ -14,35 +14,35 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 if (!function_exists('base_path')) {
     function base_path($path = '')
     {
-        return Application::getInstance()->basePath . $path;
+        return Application::getInstance()->basePath($path);
     }
 }
 
 if (!function_exists('app_path')) {
     function app_path($path = '')
     {
-        return Application::getInstance()->applicationPath . $path;
+        return Application::getInstance()->path($path);
     }
 }
 
 if (!function_exists('config_path')) {
     function config_path($path = '')
     {
-        return Application::getInstance()->configPath . $path;
+        return Application::getInstance()->configPath($path);
     }
 }
 
 if (!function_exists('storage_path')) {
     function storage_path($path = '')
     {
-        return Application::getInstance()->storagePath . $path;
+        return Application::getInstance()->storagePath($path);
     }
 }
 
 if (!function_exists('resource_path')) {
     function resource_path($path = '')
     {
-        return Application::getInstance()->resourcePath . $path;
+        return Application::getInstance()->resourcePath($path);
     }
 }
 

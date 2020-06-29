@@ -4,16 +4,21 @@
 namespace Framework;
 
 
+use Closure;
+use Framework\Contracts\ExceptionHandlerContract;
+use Framework\Contracts\HttpKernelContract;
+use Framework\Contracts\RequestContract;
+use Framework\ServiceProviders\EnvServiceProvider;
 use Framework\ServiceProviders\LogServiceProvider;
 use Framework\ServiceProviders\RoutingServiceProvider;
 use Framework\ServiceProviders\ServiceProvider;
+use Framework\Services\ExceptionHandler;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class Application
  *
- * @property Router $router
- * @property Request $request
  * @package Framework\
  */
 class Application extends Container
@@ -25,9 +30,13 @@ class Application extends Container
 
     protected $serviceProviders = [];
 
+    protected $config;
+
     public function __construct($basePath)
     {
         $this->setBasePath($basePath);
+
+        $this->loadConfig();
 
         $this->registerBaseBindings();
         $this->registerBaseServiceProviders();
@@ -41,13 +50,14 @@ class Application extends Container
     public function setBasePath($basePath)
     {
         $this->basePath = rtrim($basePath, '\/');
+    }
 
-        $this->instance('path', $this->path());
-        $this->instance('path.base', $this->basePath());
-        $this->instance('path.config', $this->configPath());
-        $this->instance('path.public', $this->publicPath());
-        $this->instance('path.storage', $this->storagePath());
-        $this->instance('path.resources', $this->resourcePath());
+    /**
+     * Load application config
+     */
+    public function loadConfig()
+    {
+        $this->config = require $this->configPath('app.php');
     }
 
     /**
@@ -56,7 +66,10 @@ class Application extends Container
     protected function registerBaseBindings()
     {
         static::setInstance($this);
-        $this->instance(Container::class, $this);
+        $this->bind(Container::class, $this);
+
+        $this->bind(HttpKernelContract::class, HttpKernel::class);
+        $this->bind(ExceptionHandlerContract::class, ExceptionHandler::class);
     }
 
     /**
@@ -64,6 +77,7 @@ class Application extends Container
      */
     protected function registerBaseServiceProviders(): void
     {
+        $this->register(EnvServiceProvider::class);
         $this->register(LogServiceProvider::class);
         $this->register(RoutingServiceProvider::class);
     }
@@ -89,7 +103,7 @@ class Application extends Container
 
         if (property_exists($serviceProvider, 'bindings')) {
             foreach ($serviceProvider->bindings as $key => $value) {
-                $this->instance($key, $value);
+                $this->bind($key, $value);
             }
         }
 
@@ -103,14 +117,47 @@ class Application extends Container
     }
 
     /**
+     * Bootstrap application
+     */
+    public function bootstrap(): void
+    {
+        $providers = $this->config['providers'] ?? [];
+        foreach ($providers as $provider) {
+            $this->register($provider);
+        }
+
+        $this->boot();
+    }
+
+    /**
      * Boot application service providers
      */
     public function boot(): void
     {
+        if ($this->isBooted()) {
+            return;
+        }
+
         foreach ($this->serviceProviders as $serviceProvider) {
             $this->bootServiceProvider($serviceProvider);
         }
         $this->booted = true;
+    }
+
+    public function terminate(
+        RequestContract $request,
+        Response $response
+    ) {
+        foreach ($this->serviceProviders as $serviceProvider) {
+            if (method_exists($serviceProvider, 'terminate')) {
+                $serviceProvider->terminate($request, $response);
+            }
+        }
+    }
+
+    public function isConsole()
+    {
+        return PHP_SAPI === 'cli';
     }
 
     /**
@@ -147,7 +194,7 @@ class Application extends Container
      *
      * @return bool
      */
-    public function isBooted():bool
+    public function isBooted(): bool
     {
         return $this->booted;
     }
@@ -228,5 +275,6 @@ class Application extends Container
     {
         return $this->basePath . DIRECTORY_SEPARATOR . 'resources' . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
+
 
 }

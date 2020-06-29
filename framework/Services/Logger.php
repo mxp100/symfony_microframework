@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Framework;
+namespace Framework\Services;
 
 
 use Exception;
@@ -15,9 +15,9 @@ class Logger implements LoggerContract
 
     protected static $config;
 
-    public function __construct()
+    public function __construct($config)
     {
-        self::$config = require(config_path('logger.php'));
+        self::$config = $config;
 
         foreach (self::$config['channels'] as $channel => $handlers) {
             self::$channels[$channel] = new MonologLogger($channel);

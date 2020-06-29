@@ -4,11 +4,12 @@ namespace Framework;
 
 use Exception;
 use Framework\Contracts\ExceptionHandlerContract;
-use Framework\Contracts\KernelContract;
+use Framework\Contracts\HttpKernelContract;
 use Framework\Contracts\MiddlewareContract;
 use Framework\Contracts\RequestContract;
 use Framework\Contracts\RouterContract;
 use Framework\HttpKernel\ArgumentResolver\ContainerValueResolver;
+use Framework\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver;
@@ -18,7 +19,7 @@ use Symfony\Component\HttpKernel\Controller\ArgumentResolver\SessionValueResolve
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver\VariadicValueResolver;
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;
 
-class HttpKernel implements KernelContract
+class HttpKernel implements HttpKernelContract
 {
     /**
      * @var Application
@@ -41,8 +42,6 @@ class HttpKernel implements KernelContract
     {
         $this->application = $application;
 
-        $this->registerBindings();
-
         $this->controllerResolver = new ControllerResolver();
         $this->argumentResolver = new ArgumentResolver(null, [
             new RequestAttributeValueResolver(),
@@ -55,21 +54,20 @@ class HttpKernel implements KernelContract
     }
 
     /**
-     * Add middleware
-     * @param MiddlewareContract $middleware
-     * @return HttpKernel
+     * @inheritDoc
      */
-    public function pushMiddleware(MiddlewareContract $middleware): self
+    public function pushMiddleware(MiddlewareContract $middleware)
     {
         $this->middleware[] = $middleware;
         return $this;
     }
 
-    public function handle(RequestContract $request = null): Response
+    /**
+     * @inheritDoc
+     */
+    public function handle(Request $request): Response
     {
-        if (is_null($request)) {
-            $request = $this->application->make(RequestContract::class);
-        }
+        $this->application->bootstrap();
 
         $this->handleMiddleware($request);
 
@@ -91,20 +89,13 @@ class HttpKernel implements KernelContract
 
     /**
      * Handle registered middleware
-     * @param RequestContract $request
+     * @param Request $request
      */
-    protected function handleMiddleware(RequestContract $request)
+    protected function handleMiddleware(Request $request)
     {
         foreach ($this->middleware as $middleware) {
             $middleware->handle($request);
         }
-    }
-
-    protected function registerBindings()
-    {
-        $this->application->instance(RouterContract::class, new Router());
-        $this->application->instance(RequestContract::class, Request::createFromGlobals());
-        $this->application->instance(ExceptionHandlerContract::class, new ExceptionHandler());
     }
 
     protected function handleRequest(Request $request)
@@ -124,6 +115,7 @@ class HttpKernel implements KernelContract
 
             return call_user_func_array($controller, $arguments);
         } catch (Exception $exception) {
+            throw $exception;
             /** @var ExceptionHandlerContract $exceptionHandler */
             $exceptionHandler = $this->application->make(ExceptionHandlerContract::class);
             return $exceptionHandler->handle($exception);
