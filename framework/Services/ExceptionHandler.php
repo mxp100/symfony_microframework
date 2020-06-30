@@ -4,7 +4,6 @@
 namespace Framework\Services;
 
 
-use Exception;
 use Framework\Application;
 use Framework\Contracts\ExceptionHandlerContract;
 use Framework\Contracts\RequestContract;
@@ -27,42 +26,50 @@ class ExceptionHandler implements ExceptionHandlerContract
      * @var RequestContract|null
      */
     protected $request;
+    /**
+     * @var Application
+     */
+    protected $application;
+
 
     /**
      * ExceptionHandler constructor.
-     * @throws Exception
+     * @param Application $application
+     * @param Run $whoops
      */
-    public function __construct()
+    public function __construct(Application $application, Run $whoops)
     {
-        $this->whoops = new Run();
-        $plainTextHandler = new PlainTextHandler(Logger::default());
-        if (env('APP_DEBUG', false)) {
-            /** @var RequestContract $request */
-            $this->request = Application::getInstance()->make(RequestContract::class);
+        $this->whoops = $whoops;
+        $this->application = $application;
 
-
-            if ($this->request->isJson()) {
-                $this->whoops->pushHandler(new JsonResponseHandler());
-            } else {
-                $this->whoops->pushHandler(new PrettyPageHandler());
-            }
-
-            $plainTextHandler->loggerOnly(false);
-        } else {
-            $plainTextHandler->loggerOnly(true);
-        }
-
-        $this->whoops->pushHandler($plainTextHandler);
-        $this->whoops->register();
+        set_exception_handler([$this, 'handle']);
     }
 
     /**
      * @inheritDoc
      */
-    public function handle(Throwable $throwable): Response
+    public function handle(Throwable $throwable): ?Response
     {
         if (method_exists($throwable, 'render')) {
             return $throwable->render($this->request);
+        }
+
+        $plainTextHandler = new PlainTextHandler(Logger::default());
+        if (env('APP_DEBUG', false)) {
+            if ($this->application->has(RequestContract::class)) {
+                /** @var RequestContract $request */
+                $this->request = $this->application->make(RequestContract::class);
+
+
+                if ($this->request->isJson()) {
+                    $this->whoops->pushHandler(new JsonResponseHandler());
+                } else {
+                    $this->whoops->pushHandler(new PrettyPageHandler());
+                }
+            }
+            $plainTextHandler->loggerOnly(false);
+        } else {
+            $plainTextHandler->loggerOnly(true);
         }
 
         $error = $throwable->getMessage();
@@ -82,6 +89,7 @@ class ExceptionHandler implements ExceptionHandlerContract
             case $throwable instanceof MethodNotAllowedException:
                 $error = $error ?: 'method not allowed';
                 $httpStatus = Response::HTTP_METHOD_NOT_ALLOWED;
+                break;
         }
 
         if ($this->request && $this->request->isJson()) {
@@ -92,6 +100,9 @@ class ExceptionHandler implements ExceptionHandlerContract
             return new Response(json_encode($response), $httpStatus);
         }
 
-        return new Response($error, $httpStatus);
+        $this->whoops->appendHandler($plainTextHandler);
+        $this->whoops->handleException($throwable);
+
+        return null;
     }
 }

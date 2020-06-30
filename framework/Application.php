@@ -5,14 +5,15 @@ namespace Framework;
 
 
 use Framework\Contracts\ConsoleKernelContract;
-use Framework\Contracts\ExceptionHandlerContract;
 use Framework\Contracts\HttpKernelContract;
 use Framework\Contracts\RequestContract;
 use Framework\ServiceProviders\EnvServiceProvider;
+use Framework\ServiceProviders\ExceptionServiceProvider;
 use Framework\ServiceProviders\LogServiceProvider;
 use Framework\ServiceProviders\RoutingServiceProvider;
 use Framework\ServiceProviders\ServiceProvider;
-use Framework\Services\ExceptionHandler;
+use ReflectionException;
+use ReflectionMethod;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -65,11 +66,11 @@ class Application extends Container
     protected function registerBaseBindings()
     {
         static::setInstance($this);
-        $this->bind(Container::class, $this);
+        $this->bind(Application::class, $this);
 
         $this->bind(HttpKernelContract::class, HttpKernel::class);
         $this->bind(ConsoleKernelContract::class, ConsoleKernel::class);
-        $this->bind(ExceptionHandlerContract::class, ExceptionHandler::class);
+
     }
 
     /**
@@ -79,6 +80,7 @@ class Application extends Container
     {
         $this->register(EnvServiceProvider::class);
         $this->register(LogServiceProvider::class);
+        $this->register(ExceptionServiceProvider::class);
         $this->register(RoutingServiceProvider::class);
     }
 
@@ -102,8 +104,14 @@ class Application extends Container
         $serviceProvider->register();
 
         if (property_exists($serviceProvider, 'bindings')) {
-            foreach ($serviceProvider->bindings as $key => $value) {
-                $this->bind($key, $value);
+            foreach ($serviceProvider->bindings as $abstract => $concrete) {
+                $this->bind($abstract, $concrete);
+            }
+        }
+
+        if (property_exists($serviceProvider, 'singletons')) {
+            foreach ($serviceProvider->singletons as $abstract => $className) {
+                $this->instance($abstract, $this->resolveInstance($className));
             }
         }
 
@@ -114,6 +122,47 @@ class Application extends Container
         }
 
         return $serviceProvider;
+    }
+
+    /**
+     * Resolving instance of object using application container
+     *
+     * @param $className
+     * @param array $arguments
+     * @return object
+     * @throws ReflectionException
+     */
+    public function resolveInstance($className, $arguments = []): object
+    {
+        if (!method_exists($className, '__construct')) {
+            return new $className;
+        }
+
+        $reflection = new ReflectionMethod($className, '__construct');
+
+        $params = [];
+        foreach ($reflection->getParameters() as $parameter) {
+            if ($type = $parameter->getType()) {
+                if (in_array(strtolower($type->getName()), ['self', 'parent'])) {
+                    throw new ReflectionException('looping detected');
+                }
+
+                $reflectionName = $type->getName();
+
+                if ($this->has($reflectionName)) {
+                    $params[] = $this->make($reflectionName);
+                } else {
+                    $params[] = $this->resolveInstance($reflectionName);
+                }
+            } else {
+                if ($value = $arguments[$parameter->getName()] ?? null) {
+                    $params[] = $value;
+                } else {
+                    $params[] = $parameter->getDefaultValue();
+                }
+            }
+        }
+        return new $className(...$params);
     }
 
     /**

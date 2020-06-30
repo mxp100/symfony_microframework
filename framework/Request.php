@@ -14,6 +14,6 @@ class Request extends BaseRequest implements RequestContract
      */
     public function isJson(): bool
     {
-        return 0 === strpos($this->headers->get('Content-Type'), 'application/json');
+        return 'XMLHttpRequest' == $this->headers->get('X-Requested-With');
     }
 }

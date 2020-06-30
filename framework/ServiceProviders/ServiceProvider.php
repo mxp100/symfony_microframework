@@ -11,9 +11,18 @@ abstract class ServiceProvider
     /**
      * Register bindings
      *
+     * @example AppContract::class => App::class
      * @var array
      */
     public $bindings = [];
+
+    /**
+     * Register singletons
+     *
+     * @example AppContract::class => App::class
+     * @var array
+     */
+    public $singletons = [];
 
     protected $application;
 

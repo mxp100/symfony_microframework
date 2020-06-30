@@ -12,7 +12,7 @@ interface ExceptionHandlerContract
     /**
      * Handle exceptions
      * @param Throwable $throwable
-     * @return Response
+     * @return Response|null
      */
-    public function handle(Throwable $throwable): Response;
+    public function handle(Throwable $throwable): ?Response;
 }
