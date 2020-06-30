@@ -4,14 +4,15 @@
 namespace Framework;
 
 
-use Framework\Contracts\ConsoleKernelContract;
-use Framework\Contracts\HttpKernelContract;
-use Framework\Contracts\RequestContract;
-use Framework\ServiceProviders\EnvServiceProvider;
-use Framework\ServiceProviders\ExceptionServiceProvider;
-use Framework\ServiceProviders\LogServiceProvider;
-use Framework\ServiceProviders\RoutingServiceProvider;
-use Framework\ServiceProviders\ServiceProvider;
+use Framework\ConsoleKernel\ConsoleKernel;
+use Framework\ConsoleKernel\ConsoleKernelContract;
+use Framework\Environment\ServiceProvider as EnvServiceProvider;
+use Framework\Exception\ServiceProvider as ExceptionServiceProvider;
+use Framework\HttpKernel\HttpKernel;
+use Framework\HttpKernel\HttpKernelContract;
+use Framework\Log\ServiceProvider as LogServiceProvider;
+use Framework\Request\RequestContract;
+use Framework\Router\ServiceProvider as RouterServiceProvider;
 use ReflectionException;
 use ReflectionMethod;
 use Symfony\Component\HttpFoundation\Response;
@@ -81,17 +82,17 @@ class Application extends Container
         $this->register(EnvServiceProvider::class);
         $this->register(LogServiceProvider::class);
         $this->register(ExceptionServiceProvider::class);
-        $this->register(RoutingServiceProvider::class);
+        $this->register(RouterServiceProvider::class);
     }
 
     /**
      * Register service providers
      *
-     * @param ServiceProvider|string $serviceProvider Instance or classname of service provider
+     * @param AbstractServiceProvider|string $serviceProvider Instance or classname of service provider
      * @param bool $force Force register
-     * @return ServiceProvider
+     * @return AbstractServiceProvider
      */
-    public function register($serviceProvider, $force = false): ServiceProvider
+    public function register($serviceProvider, $force = false): AbstractServiceProvider
     {
         if (($registered = $this->getServiceProvider($serviceProvider)) && !$force) {
             return $registered;
@@ -212,9 +213,9 @@ class Application extends Container
     /**
      * Boot service provider
      *
-     * @param ServiceProvider $serviceProvider
+     * @param AbstractServiceProvider $serviceProvider
      */
-    protected function bootServiceProvider(ServiceProvider $serviceProvider): void
+    protected function bootServiceProvider(AbstractServiceProvider $serviceProvider): void
     {
         if (method_exists($serviceProvider, 'boot')) {
             $serviceProvider->boot();
@@ -224,10 +225,10 @@ class Application extends Container
     /**
      * Get registered service provider
      *
-     * @param ServiceProvider|string $serviceProvider
-     * @return ServiceProvider|null
+     * @param AbstractServiceProvider|string $serviceProvider
+     * @return AbstractServiceProvider|null
      */
-    public function getServiceProvider($serviceProvider): ?ServiceProvider
+    public function getServiceProvider($serviceProvider): ?AbstractServiceProvider
     {
         $className = is_string($serviceProvider) ? $serviceProvider : get_class($serviceProvider);
         foreach ($this->serviceProviders as $value) {
@@ -252,9 +253,9 @@ class Application extends Container
      * Resolve service provider
      *
      * @param string $provider
-     * @return ServiceProvider
+     * @return AbstractServiceProvider
      */
-    public function resolveProvider(string $provider): ServiceProvider
+    public function resolveProvider(string $provider): AbstractServiceProvider
     {
         return new $provider($this);
     }

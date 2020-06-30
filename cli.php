@@ -2,7 +2,7 @@
 
 
 use Framework\Application;
-use Framework\Contracts\ConsoleKernelContract;
+use Framework\ConsoleKernel\ConsoleKernelContract;
 
 require __DIR__ . '/vendor/autoload.php';
 

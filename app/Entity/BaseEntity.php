@@ -5,7 +5,7 @@ namespace App\Entity;
 
 
 use Framework\Application;
-use Framework\Contracts\DatabaseContract;
+use Framework\Database\DatabaseContract;
 use JsonSerializable;
 
 abstract class BaseEntity implements JsonSerializable

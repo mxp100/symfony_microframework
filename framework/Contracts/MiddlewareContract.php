@@ -4,7 +4,7 @@
 namespace Framework\Contracts;
 
 
-use Framework\Request;
+use Framework\Request\Request;
 
 interface MiddlewareContract
 {

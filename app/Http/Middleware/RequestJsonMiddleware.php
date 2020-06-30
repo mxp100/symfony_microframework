@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 
 
 use Framework\Contracts\MiddlewareContract;
-use Framework\Request;
+use Framework\Request\Request;
 
 class RequestJsonMiddleware implements MiddlewareContract
 {

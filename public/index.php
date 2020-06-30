@@ -4,9 +4,9 @@ ini_set('display_errors', 'on');
 
 use App\Http\Middleware\RequestJsonMiddleware;
 use Framework\Application;
-use Framework\Contracts\HttpKernelContract;
-use Framework\Contracts\RequestContract;
-use Framework\Request;
+use Framework\HttpKernel\HttpKernelContract;
+use Framework\Request\Request;
+use Framework\Request\RequestContract;
 
 require __DIR__ . '/../vendor/autoload.php';
 

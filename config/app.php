@@ -1,8 +1,11 @@
 <?php
 
+use Framework\Database\ServiceProvider as DatabaseProvider;
+use Framework\View\ServiceProvider as ViewProvider;
+
 return [
     'providers' => [
-        \Framework\ServiceProviders\DatabaseServiceProvider::class,
-        \Framework\ServiceProviders\ViewServiceProvider::class
+        DatabaseProvider::class,
+        ViewProvider::class
     ]
 ];

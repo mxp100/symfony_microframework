@@ -8,7 +8,7 @@ use App\Exceptions\ResponseException;
 use App\Services\OrderService;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Framework\Request;
+use Framework\Request\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 

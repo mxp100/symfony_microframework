@@ -5,7 +5,7 @@ namespace App\Http\Controllers\API;
 
 
 use App\Services\GoodService;
-use Framework\Request;
+use Framework\Request\Request;
 
 class GoodController extends BaseController
 {

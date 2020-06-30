@@ -2,10 +2,10 @@
 
 use Doctrine\ORM\EntityManager;
 use Framework\Application;
-use Framework\Contracts\DatabaseContract;
-use Framework\Contracts\EnvironmentContract;
-use Framework\Contracts\RouterContract;
-use Framework\Contracts\ViewContract;
+use Framework\Database\DatabaseContract;
+use Framework\Environment\EnvironmentContract;
+use Framework\Router\RouterContract;
+use Framework\View\ViewContract;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
