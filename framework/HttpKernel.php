@@ -7,6 +7,7 @@ use Framework\Contracts\ExceptionHandlerContract;
 use Framework\Contracts\HttpKernelContract;
 use Framework\Contracts\MiddlewareContract;
 use Framework\Contracts\RouterContract;
+use Framework\HttpKernel\ArgumentResolver\ClassValueResolver;
 use Framework\HttpKernel\ArgumentResolver\ContainerValueResolver;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
@@ -48,6 +49,7 @@ class HttpKernel implements HttpKernelContract
             new DefaultValueResolver(),
             new VariadicValueResolver(),
             new ContainerValueResolver(),
+            new ClassValueResolver(),
         ]);
     }
 

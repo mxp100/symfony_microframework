@@ -14,25 +14,19 @@ use Throwable;
 
 class OrderController extends BaseController
 {
-    protected $service;
-
-    public function __construct()
-    {
-        $this->service = new OrderService();
-    }
-
     /**
      * Create order
      *
+     * @param OrderService $orderService
      * @param Request $request
      * @return array
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function create(Request $request)
+    public function create(OrderService $orderService, Request $request)
     {
 
-        $orderId = $this->service->create($request->request->get('good_ids'));
+        $orderId = $orderService->create($request->request->get('good_ids'));
 
         return [
             'order_id' => $orderId
@@ -40,14 +34,15 @@ class OrderController extends BaseController
     }
 
     /**
+     * @param OrderService $orderService
      * @param Request $request
      * @param int $orderId
      * @throws ResponseException
      */
-    public function pay(Request $request, int $orderId)
+    public function pay(OrderService $orderService, Request $request, int $orderId)
     {
         try {
-            $this->service->pay(
+            $orderService->pay(
                 $orderId,
                 $request->request->get('sum')
             );

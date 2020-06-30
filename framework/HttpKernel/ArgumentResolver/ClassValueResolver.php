@@ -4,18 +4,17 @@
 namespace Framework\HttpKernel\ArgumentResolver;
 
 
-use Framework\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
 /**
- * Resolve objects from container
+ * Simple class resolver
  *
- * Class ContainerValueResolver
+ * Class ClassValueResolver
  * @package Framework\HttpKernel\ArgumentResolver
  */
-class ContainerValueResolver implements ArgumentValueResolverInterface
+class ClassValueResolver implements ArgumentValueResolverInterface
 {
 
     /**
@@ -23,7 +22,7 @@ class ContainerValueResolver implements ArgumentValueResolverInterface
      */
     public function supports(Request $request, ArgumentMetadata $argument)
     {
-        return Application::getInstance()->has($argument->getType());
+        return class_exists($argument->getType());
     }
 
     /**
@@ -31,6 +30,7 @@ class ContainerValueResolver implements ArgumentValueResolverInterface
      */
     public function resolve(Request $request, ArgumentMetadata $argument)
     {
-        yield Application::getInstance()->make($argument->getType());
+        $className = $argument->getType();
+        yield new $className;
     }
 }
