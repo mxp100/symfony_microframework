@@ -1,19 +1,13 @@
 <?php
 
-use App\Commands;
-use Doctrine\ORM\Tools\Console\ConsoleRunner;
+
 use Framework\Application;
-use Framework\Contracts\DatabaseContract;
+use Framework\Contracts\ConsoleKernelContract;
 
 require __DIR__ . '/vendor/autoload.php';
 
-$app = Application::load();
+$app = new Application(__DIR__);
 
-/** @var DatabaseContract $database */
-$database = $app->make(DatabaseContract::class);
-
-$helperSet = ConsoleRunner::createHelperSet($database->getEntityManager());
-
-ConsoleRunner::run($helperSet, [
-    new Commands\DoctrineFixturesLoadCommand(),
-]);
+/** @var ConsoleKernelContract $kernel */
+$kernel = $app->make(ConsoleKernelContract::class, [$app]);
+$kernel->handle();

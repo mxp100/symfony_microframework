@@ -6,10 +6,8 @@ use Exception;
 use Framework\Contracts\ExceptionHandlerContract;
 use Framework\Contracts\HttpKernelContract;
 use Framework\Contracts\MiddlewareContract;
-use Framework\Contracts\RequestContract;
 use Framework\Contracts\RouterContract;
 use Framework\HttpKernel\ArgumentResolver\ContainerValueResolver;
-use Framework\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver;
@@ -115,7 +113,6 @@ class HttpKernel implements HttpKernelContract
 
             return call_user_func_array($controller, $arguments);
         } catch (Exception $exception) {
-            throw $exception;
             /** @var ExceptionHandlerContract $exceptionHandler */
             $exceptionHandler = $this->application->make(ExceptionHandlerContract::class);
             return $exceptionHandler->handle($exception);

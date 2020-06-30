@@ -4,7 +4,7 @@
 namespace Framework;
 
 
-use Closure;
+use Framework\Contracts\ConsoleKernelContract;
 use Framework\Contracts\ExceptionHandlerContract;
 use Framework\Contracts\HttpKernelContract;
 use Framework\Contracts\RequestContract;
@@ -13,7 +13,6 @@ use Framework\ServiceProviders\LogServiceProvider;
 use Framework\ServiceProviders\RoutingServiceProvider;
 use Framework\ServiceProviders\ServiceProvider;
 use Framework\Services\ExceptionHandler;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -69,6 +68,7 @@ class Application extends Container
         $this->bind(Container::class, $this);
 
         $this->bind(HttpKernelContract::class, HttpKernel::class);
+        $this->bind(ConsoleKernelContract::class, ConsoleKernel::class);
         $this->bind(ExceptionHandlerContract::class, ExceptionHandler::class);
     }
 
