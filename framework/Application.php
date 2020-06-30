@@ -64,7 +64,7 @@ class Application extends Container
     /**
      * Register base bindings
      */
-    protected function registerBaseBindings()
+    protected function registerBaseBindings(): void
     {
         static::setInstance($this);
         $this->bind(Application::class, $this);
