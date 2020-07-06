@@ -4,12 +4,13 @@ namespace Framework\HttpKernel;
 
 use Exception;
 use Framework\Application;
-use Framework\Exception\ExceptionHandlerContract;
 use Framework\Contracts\MiddlewareContract;
+use Framework\Exception\ExceptionHandlerContract;
 use Framework\HttpKernel\ArgumentResolver\ClassValueResolver;
 use Framework\HttpKernel\ArgumentResolver\ContainerValueResolver;
 use Framework\Request\Request;
 use Framework\Router\RouterContract;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver;
@@ -25,18 +26,24 @@ class HttpKernel implements HttpKernelContract
      * @var Application
      */
     protected $application;
+
     /**
-     * @var ControllerResolver
-     */
-    protected $controllerResolver;
-    /**
-     * @var ArgumentResolver
-     */
-    protected $argumentResolver;
-    /**
-     * @var MiddlewareContract[]
+     * Global middleware's
+     * @var string[]
      */
     protected $middleware = [];
+
+    /**
+     * Registered middleware's
+     * @var string[]
+     */
+    protected $middlewareRegistered = [];
+
+    /**
+     * Aliases for middleware's
+     * @var array
+     */
+    protected $middlewareAlias = [];
 
     public function __construct(Application $application)
     {
@@ -57,7 +64,7 @@ class HttpKernel implements HttpKernelContract
     /**
      * @inheritDoc
      */
-    public function pushMiddleware(MiddlewareContract $middleware)
+    public function pushMiddleware(string $middleware)
     {
         $this->middleware[] = $middleware;
         return $this;
@@ -66,10 +73,23 @@ class HttpKernel implements HttpKernelContract
     /**
      * @inheritDoc
      */
+    public function registerMiddleware(string $middleware, ?string $alias = null)
+    {
+        $this->middlewareRegistered[] = $middleware;
+        if (!is_null($alias)) {
+            $this->middlewareAlias[$alias] = $middleware;
+        }
+    }
+
+    /**
+     * @inheritDoc
+     * @throws \ReflectionException
+     */
     public function handle(Request $request): Response
     {
         $this->application->bootstrap();
 
+        $this->prepareRequest($request);
         $this->handleMiddleware($request);
 
         $response = $this->handleRequest($request);
@@ -79,8 +99,7 @@ class HttpKernel implements HttpKernelContract
         }
 
         if (is_array($response)) {
-            $response = new Response(json_encode($response));
-            $response->headers->set('Content-Type', 'application/json');
+            $response = new JsonResponse($response);
         } else {
             $response = new Response($response);
         }
@@ -88,33 +107,46 @@ class HttpKernel implements HttpKernelContract
         return $response;
     }
 
+    protected function prepareRequest(Request $request): void
+    {
+        /** @var RouterContract $router */
+        $router = $this->application->make(RouterContract::class);
+
+        $request->setRouteMetadata($router->matchRoute($request));
+    }
+
     /**
      * Handle registered middleware
      * @param Request $request
+     * @throws \ReflectionException
      */
     protected function handleMiddleware(Request $request)
     {
-        foreach ($this->middleware as $middleware) {
-            $middleware->handle($request);
+        foreach ($this->middleware as $key => $middleware) {
+            if (is_string($middleware)) {
+                $this->middleware[$key] = $middleware = $this->application->resolveInstance($middleware);
+            }
+
+            if ($middleware instanceof MiddlewareContract) {
+                $middleware->handle($request);
+            } else {
+                throw new \RuntimeException('middleware not implemented MiddlewareContract');
+            }
+
         }
     }
 
     protected function handleRequest(Request $request)
     {
-        /** @var RouterContract $router */
-        $router = $this->application->make(RouterContract::class);
-
-        $matcher = $router->getUrlMatcher();
-
-        $matcher->getContext()->fromRequest($request);
-
         try {
-            $request->attributes->add($matcher->match($request->getPathInfo()));
+            $routeMetadata = $request->getRouteMetadata();
 
-            $controller = $this->controllerResolver->getController($request);
-            $arguments = $this->argumentResolver->getArguments($request, $controller);
+            return $this->application->call(
+                $routeMetadata->getController(),
+                $routeMetadata->getMethod(),
+                $routeMetadata->getArguments()
+            );
 
-            return call_user_func_array($controller, $arguments);
         } catch (Exception $exception) {
             /** @var ExceptionHandlerContract $exceptionHandler */
             $exceptionHandler = $this->application->make(ExceptionHandlerContract::class);

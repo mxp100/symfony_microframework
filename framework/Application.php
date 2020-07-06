@@ -139,21 +139,85 @@ class Application extends Container
             return new $className;
         }
 
-        $reflection = new ReflectionMethod($className, '__construct');
+        $params = $this->resolveMethodArguments($className, '__construct', $arguments);
+
+        return new $className(...$params);
+    }
+
+    /**
+     * Call to class method with DI
+     *
+     * @param string $className
+     * @param string|null $method
+     * @param array $arguments
+     * @return mixed
+     * @throws ReflectionException
+     */
+    public function call(string $className, ?string $method = null, $arguments = [])
+    {
+        if (is_null($method)) {
+            if (method_exists($className, '__invoke')) {
+                $method = '__invoke';
+            } else {
+                throw new ReflectionException('Not call to class as function without __invoke');
+            }
+        }
+
+        $params = $this->resolveMethodArguments($className, $method, $arguments);
+
+        return $this->resolveInstance($className)->$method(...$params);
+    }
+
+    /**
+     * Resolve method parameters with container
+     *
+     * @param string $className
+     * @param string $method
+     * @param array $arguments
+     * @return array
+     * @throws ReflectionException
+     */
+    protected function resolveMethodArguments(string $className, string $method, $arguments = []): array
+    {
+        $reflection = new ReflectionMethod($className, $method);
 
         $params = [];
         foreach ($reflection->getParameters() as $parameter) {
             if ($type = $parameter->getType()) {
-                if (in_array(strtolower($type->getName()), ['self', 'parent'])) {
-                    throw new ReflectionException('looping detected');
+                if ($method == '__construct') {
+                    if (in_array(strtolower($type->getName()), ['self', 'parent'])) {
+                        throw new ReflectionException('looping detected');
+                    }
                 }
 
-                $reflectionName = $type->getName();
+                switch (strtolower($type->getName())) {
+                    case 'self':
+                        $reflectionName = $reflection->getDeclaringClass()->name;
+                        break;
+                    case 'parent':
+                        $reflectionName = ($parent = $reflection->getDeclaringClass()->getParentClass()) ? $parent->name : null;
+                        break;
+                    default:
+                        $parameterClass = $parameter->getClass();
+                        $reflectionName = $parameterClass ? $parameterClass->getName() : null;
+                }
 
-                if ($this->has($reflectionName)) {
-                    $params[] = $this->make($reflectionName);
+                if (is_null($reflectionName)) {
+                    if ($value = $arguments[$parameter->getName()] ?? null) {
+                        $params[] = $value;
+                    } else {
+                        $params[] = $parameter->getDefaultValue();
+                    }
                 } else {
-                    $params[] = $this->resolveInstance($reflectionName);
+                    if ($this->has($reflectionName)) {
+                        $params[] = $this->make($reflectionName);
+                    } else {
+                        if (!class_exists($reflectionName)) {
+                            throw new ReflectionException('class "' . $reflectionName . '" not found');
+                        }
+
+                        $params[] = $this->resolveInstance($reflectionName);
+                    }
                 }
             } else {
                 if ($value = $arguments[$parameter->getName()] ?? null) {
@@ -163,7 +227,7 @@ class Application extends Container
                 }
             }
         }
-        return new $className(...$params);
+        return $params;
     }
 
     /**

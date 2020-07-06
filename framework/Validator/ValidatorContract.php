@@ -4,7 +4,7 @@
 namespace Framework\Validator;
 
 
-class Validator implements ValidatorContract
+interface ValidatorContract
 {
 
 }

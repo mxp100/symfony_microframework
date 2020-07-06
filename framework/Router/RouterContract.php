@@ -4,15 +4,33 @@
 namespace Framework\Router;
 
 
-use Symfony\Component\Routing\Generator\UrlGenerator;
-use Symfony\Component\Routing\Matcher\UrlMatcher;
-use Symfony\Component\Routing\RequestContext;
+use Framework\Request\Request;
 
 interface RouterContract
 {
-    public function getUrlMatcher(): UrlMatcher;
+    /**
+     * Get URL
+     *
+     * @param string $relative
+     * @return string
+     */
+    public function getUrl($relative = ''): string;
 
-    public function getUrlGenerator(): UrlGenerator;
+    /**
+     * Get URL by route
+     *
+     * @param string $name
+     * @param array $parameters
+     * @param bool $absolute
+     * @return string
+     */
+    public function getRoute(string $name, array $parameters = [], bool $absolute = true): string;
 
-    public function getRequestContext(): RequestContext;
+    /**
+     * Get route metadata by request
+     *
+     * @param Request $request
+     * @return RouteMetadata
+     */
+    public function matchRoute(Request $request): RouteMetadata;
 }

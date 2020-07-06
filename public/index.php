@@ -14,7 +14,7 @@ $app = new Application(dirname(__DIR__));
 
 /** @var HttpKernelContract $kernel */
 $kernel = $app->make(HttpKernelContract::class, [$app]);
-$kernel->pushMiddleware(new RequestJsonMiddleware());
+$kernel->pushMiddleware(RequestJsonMiddleware::class);
 
 /** @var Request $request */
 $request = $app->instance(RequestContract::class, Request::createFromGlobals());
